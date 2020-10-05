@@ -1,6 +1,8 @@
 /*
-ТЗ:
-1. Переписать рандомайзер
+Задания:
+1. Может пора подключать настройки к БД? А?
+2. Нужно пересмотреть report.js.
+Код давно не обновлялся, я думаю, работать будет, но нужно перепроверить и оптимизировать с новыми знаниями
 */
 
 //  Подключаем библиотеки!
@@ -13,6 +15,7 @@ const fs        = require('fs');
 const CONFIG = require('./config.json'); //  Подключаем конфиг
 //const SETTINGS = require('./settings.js'); //  Подключаем настройки
 const XP     = require('./models/xp.js'); //  Подключаем уровень
+const { setTimeout } = require('timers');
 
 bot = new discord.Client(); //  Создаём клиента
 bot.login(CONFIG.token); //  И логиним его из конфига
@@ -101,7 +104,7 @@ bot.on('ready', () => {
     */
 });
 
-//  Загрузка команд
+//  Загрузка команд из директории /cmd
 fs.readdir("./cmd/", (err, files) => {
 	if(err) console.log(err);
 	let jsfile = files.filter(f => f.split(".").pop() === "js");
@@ -123,7 +126,7 @@ fs.readdir("./cmd/", (err, files) => {
 	});
 });
 
-// Просмотр ВСЕХ евентов (да читы)
+// Просмотр ВСЕХ евентов (да читы, а хотя нет, раз это есть в официальной библеотеке, то это тоже самое, что не пользоваться имбалансным спелом))) )
 bot.on('raw', event => { try {
     if ((event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") && event.d.user_id == bot.user.id && event.d.emoji.name == '🆙') { // Выдача xp за реакцию
         
@@ -184,16 +187,14 @@ bot.on('raw', event => { try {
 
 //  Уровневая система
 bot.on('message', async (message)=>{try{
-    
-    let ok=true //  Проверка на исключение
-    for(i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
-    if(!ok) return;
-    
-
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
 
-    if(timers[message.author.id]) {
+    let ok=true //  Проверка на исключение
+    for(i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
+    if(!ok) return;
+
+    if(timers[message.author.id]) { //  Смотрим кулдаун. Тут он умный)
         timers[message.author.id].addTime(1000);
         if(timers[message.author.id].getTime()>6000) message.author.send(new discord.MessageEmbed().setColor('ff0000').setTitle('Не пиши так быстро!').setDescription(`Твой таймаут достиг ${timers[message.author.id].getTime()/1000} секунд!`))
         return;
@@ -244,7 +245,11 @@ bot.on('message', async (message)=>{try{
 				level.level  = curlvl + 1;
                 level.xp     = otnxp;
                 
-                message.react('🆙');
+                message.react('🆙').then(message=>{
+                    setTimeout(()=>{
+                        message.reactions.cache.get("🆙").remove(bot.user.id);
+                    },10000);
+                });
 		
 				//embed = new discord.MessageEmbed().setTitle("Новый уровень!").setColor("#0000FF").addField(`АТЛИЧНА, ${message.author.username}!!! Ты достиг **${curlvl+1} уровня**!`, "Продолжай в том же духе!").setImage("attachment://lvlup.png")
 				//message.channel.send({embed: embed, files: [new discord.MessageAttachment("./img/lvlup.png", 'lvlup.png')]}).then(msg => {msg.delete({timeout:10000})});
@@ -254,6 +259,95 @@ bot.on('message', async (message)=>{try{
 		}
 	})
 }catch(err){console.log(err)}})
+
+//  Если человек изменил сообщение, то уровень пересчитывается и следовательно отнимается или даётся
+bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
+    if(message.author.bot) return; //  Не слушаем других ботов
+    if(message.channel.type == 'dm') return; //  Не слушаем ЛС
+
+    let ok=true; //  Проверка на исключение
+    for(i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
+    if(!ok) return;
+    
+    let oldMessLeng = oldMessage.content.length;
+    if(oldMessLeng>800) oldMessLeng = 800;
+    let newMessLeng = newMessage.content.length;
+    if(newMessLeng>800) newMessLeng = 800;
+
+    let xpAdd = (Math.floor(newMessLeng/2)+1) - (Math.floor(oldMessLeng/2)+1);
+
+    XP.findOne({userID: message.author.id}, (err, level) => {
+		if(err) console.log(err);
+
+        let messLeng = message.content.length;
+        if(messLeng>800) messLeng = 800
+
+        let xpAdd = Math.floor(messLeng/2)+1;
+
+		//console.log(`${message.author.username}: ${xpAdd}xp`); // Не знаю зачем, раньше была для откладки
+
+		if(!level) {
+			var newXP =  new XP({
+				userID: message.author.id,
+				level: 0,
+				xp: xpAdd
+			})
+
+			newXP.save().catch(err => console.log(err))
+		} else {
+			level.xp   = level.xp + xpAdd
+
+			let curlvl = level.level;
+            let nxtLvl = 400+(120*curlvl*2.5);
+
+			if(nxtLvl <= level.xp){
+
+				otnxp        = level.xp - nxtLvl;
+				level.level  = curlvl + 1;
+                level.xp     = otnxp;
+                
+                //message.react('🆙'); // Наверное, лучше это тут убрать
+			}
+
+			level.save().catch(err => console.log(err))
+		}
+	})
+}catch(err){console.log(err)}})
+
+//  Если человек удалил сообщение, то уровень удаляется. ДА, с помозью такой фичи можно получить отрицательный XP, но мне пофиг)
+bot.on('messageDelete',async (message)=> {try{
+    if(message.author.bot) return; //  Не слушаем других ботов
+    if(message.channel.type == 'dm') return; //  Не слушаем ЛС
+
+    let ok=true //  Проверка на исключение
+    for(i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
+    if(!ok) return;
+    
+    XP.findOne({userID: message.author.id}, (err, level) => {
+		if(err) console.log(err);
+
+        let messLeng = message.content.length;
+        if(messLeng>800) messLeng = 800
+
+        let xpAdd = Math.floor(messLeng/2)+1;
+
+		//console.log(`${message.author.username}: ${xpAdd}xp`); // Не знаю зачем, раньше была для откладки
+
+		if(!level) {
+			var newXP =  new XP({
+				userID: message.author.id,
+				level: 0,
+				xp: -xpAdd
+			})
+
+			newXP.save().catch(err => console.log(err))
+		} else {
+			level.xp   = level.xp - xpAdd
+
+			level.save().catch(err => console.log(err))
+		}
+	})
+}catch(err){console.log(err)}});
 
 //  Для выполнения команд
 bot.on("message", async (message) => {try{

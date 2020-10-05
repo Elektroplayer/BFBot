@@ -2,8 +2,6 @@ const XP       = require('../models/xp.js');
 const discord  = require('discord.js');
 module.exports = {
     run: (bot,message,args,con)=> {try{
-        message.delete();
-
         if(args[0] == "help") {
             return message.channel.send(con.defEmb.setTitle("Помощь по команде leaderboard").setDescription("Рейтинг по уровню").setFooter(con.footer)
             .addField('Аргументы:',`Нету`)

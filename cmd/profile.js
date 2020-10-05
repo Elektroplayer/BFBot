@@ -4,6 +4,17 @@ const addlib     = require("../addLib.js");
 
 module.exports = {
     run: (bot,message,args,con)=> {try{
+        if(args[0] == "help") {
+            return message.channel.send(con.defEmb.setTitle("Помощь по команде profile").setDescription("Информация о человеке").setFooter(con.footer)
+            .addField('Аргументы:',`**<@user>** - *Не обязательный аргумент!* Покажет информацию об пользователе *(Можно ввести ID или имя)*`)
+            .addField('Примеры:',`**e!profile** - Покажет информацию о тебе\n**e!profile @user** -  покажет информацию об упомянутом пользователе\n**e!profile 111111123456789101** - покажет информацию о пользователе с таким ID\n**e!profile UserName** - покажет информацию о пользователе с таким именем *(НЕ НИКОМ НА СЕРВЕРЕ)*`)
+            .addField('Сокращения:',`**e!me**`)
+            .addField('Могут использовать:','Все без исключений',true)
+            .addField('Последнее обновление:',`Версия 3.2`,true)
+            )
+        }
+
+
         let argsUser
         if(!args[0]) argsUser = message.author
         else {

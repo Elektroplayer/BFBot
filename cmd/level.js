@@ -7,6 +7,16 @@ const addlib   = require('../addLib.js');
 
 module.exports = {
     run: async (bot,message,args,con)=> {try{
+        if(args[0] == "help") {
+            return message.channel.send(con.defEmb.setTitle("Помощь по команде level").setDescription("Узнать свой уровень").setFooter(con.footer)
+            .addField('Аргументы:',`**<@user>** - *Не обязательный аргумент!* Покажет уровень упомянутого пользователя *(Можно ввести ID или имя)*`)
+            .addField('Примеры:',`**e!level** - покажет твой уровень\n**e!level @user** -  покажет уровень упомянутого пользователя\n**e!level 111111123456789101** - покажет уровень пользователя с таким ID\n**e!level UserName** - покажет уровень пользователя с таким именем *(НЕ НИКОМ НА СЕРВЕРЕ)*`)
+            .addField('Сокращения:',`**e!xp, e!lvl**`)
+            .addField('Могут использовать:','Все без исключений',true)
+            .addField('Последнее обновление:',`Версия 3.2`,true)
+            )
+        }
+
         let embed = con.defEmb.setFooter(con.footer);
     
         let luser
@@ -14,9 +24,9 @@ module.exports = {
             luser = message.author
             embed.setTitle("Твой уровень:")
         } else {
-            luser = message.guild.member(message.mentions.users.first() || message.guild.members.cache.get(args[0]) || message.guild.members.cache.find(m => m.name === args[0])).user;
+            luser = message.guild.member(message.mentions.users.first() || message.guild.members.cache.get(args[0]) || message.guild.members.cache.find(m => m.user.username == args[0])).user;
             if(!luser) return addlib.errors.noUser(message);
-            embed.setTitle(`Уровень ${luser.username}`)
+            embed.setTitle(`Уровень ${luser.username}`);
         }
     
         await XP.findOne({userID: luser.id}, (err, level) => {

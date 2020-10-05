@@ -6,7 +6,7 @@ module.exports = {
         if(args[0] == "help") {
             return message.channel.send(con.defEmb.setTitle("Помощь по команде clear").setDescription("Очистка сообщений").setFooter(con.footer)
             .addField('Аргументы:',`**count** - количество удаляемых сообщений`)
-            .addField('Примеры:',`**e!clear 10** - удалит 10 сообщений`)
+            .addField('Примеры:',`**e!clear 10** - удалит 10 сообщений\ne!clean 10 - тоже самое`)
             .addField('Могут использовать:','Серверная элита',true)
             .addField('Последнее обновление:',`Версия 3.2`,true)
             )

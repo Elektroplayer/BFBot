@@ -3,8 +3,6 @@ module.exports = {
         if(args[0] == "help") {
             return message.channel.send(con.defEmb.setTitle("Тебе серьёзно нужна помощь по команде помощи?").setDescription("Мне лень)").setFooter(con.footer))
         }
-        
-        message.delete()
 
         let categories = con.categories;
         emb = con.defEmb.setTitle('Помощь')

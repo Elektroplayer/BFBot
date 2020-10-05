@@ -4,7 +4,6 @@ const XP      = require('../models/xp.js');
 
 module.exports = {
     run: (bot,message,args,con)=> {try{
-        message.delete()
 
         if(args[0] == "help") {
             return message.channel.send(con.defEmb.setTitle("Помощь по команде create").setDescription("Создать голосовой канал").setFooter(con.footer)
