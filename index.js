@@ -15,7 +15,6 @@ const fs        = require('fs');
 const CONFIG = require('./config.json'); //  Подключаем конфиг
 //const SETTINGS = require('./settings.js'); //  Подключаем настройки
 const XP     = require('./models/xp.js'); //  Подключаем уровень
-const { setTimeout } = require('timers');
 
 bot = new discord.Client(); //  Создаём клиента
 bot.login(CONFIG.token); //  И логиним его из конфига
