@@ -4,7 +4,7 @@ const colors          = require('../colors.json');
 
 module.exports = {
     run: (bot,message,args,con)=> {try{
-        message.delete();
+        //message.delete();
 
         if(message.author.id != "283666032823107585") return message.channel.send(MessageEmbed().setColor(colors.red).setTitle('У тебя нет права суперпользователя!'));
 
@@ -54,7 +54,10 @@ module.exports = {
                     level.save().catch(err => console.log(err))
                 }
             })
-        }
+        }// else
+        //if(args[0] == "eval") {
+        //    message
+        //}
 
     }catch(err){console.log(err)}},
     cmd: "sudo",

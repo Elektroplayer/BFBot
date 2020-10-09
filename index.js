@@ -127,11 +127,15 @@ fs.readdir("./cmd/", (err, files) => {
 });
 
 // Просмотр ВСЕХ евентов (да читы, а хотя нет, раз это есть в официальной библеотеке, то это тоже самое, что не пользоваться имбалансным спелом))) )
-bot.on('raw', event => { try {
-    if ((event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") && event.d.user_id == bot.user.id && event.d.emoji.name == '🆙') { // Выдача xp за реакцию
-        
-        xpAdd = 50
-        if (event.t === "MESSAGE_REACTION_REMOVE") xpAdd=-xpAdd
+bot.on('raw', async (event) => { try {
+    
+    if ((event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") && event.d.emoji.name == '🆙') { // Выдача xp за реакцию
+        let message = await bot.guilds.cache.get(event.d.guild_id).channels.cache.get(event.d.channel_id).messages.fetch(event.d.message_id)
+
+        if(!Boolean(message.reactions.cache.get('🆙').users.cache.get(bot.user.id))) return;
+
+        xpAdd = 50;
+        if (event.t === "MESSAGE_REACTION_REMOVE") xpAdd=-xpAdd;
 
         XP.findOne({userID:event.d.user_id}, (err, level) => {
             if(err) console.log(err);
@@ -149,6 +153,7 @@ bot.on('raw', event => { try {
                 level.save().catch(err => console.log(err))
             }
         })
+        
 	} else if (event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") { // Роли по реакции
 		if(event.d.message_id == '738369557961506886' && event.d.user_id != bot.user.id) {
 			let guild      = bot.guilds.cache.get(event.d.guild_id);
@@ -246,9 +251,11 @@ bot.on('message', async (message)=>{try{
                 level.xp     = otnxp;
                 
                 message.react('🆙').then(message=>{
+                    //  Попытка сделать через коллектор и не городить велосипед была... Как уже понятно, она провалилась
+                    
                     setTimeout(()=>{
                         message.reactions.cache.get("🆙").remove(bot.user.id);
-                    },10000);
+                    }, 10000);
                 });
 		
 				//embed = new discord.MessageEmbed().setTitle("Новый уровень!").setColor("#0000FF").addField(`АТЛИЧНА, ${message.author.username}!!! Ты достиг **${curlvl+1} уровня**!`, "Продолжай в том же духе!").setImage("attachment://lvlup.png")
@@ -262,11 +269,11 @@ bot.on('message', async (message)=>{try{
 
 //  Если человек изменил сообщение, то уровень пересчитывается и следовательно отнимается или даётся
 bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
-    if(message.author.bot) return; //  Не слушаем других ботов
-    if(message.channel.type == 'dm') return; //  Не слушаем ЛС
+    if(oldMessage.author.bot) return; //  Не слушаем других ботов
+    if(oldMessage.channel.type == 'dm') return; //  Не слушаем ЛС
 
     let ok=true; //  Проверка на исключение
-    for(i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
+    for(i=0;i<=xpExceptions.length-1;i++) { if(oldMessage.channel.id === xpExceptions[i]) { ok=false; break;}}
     if(!ok) return;
     
     let oldMessLeng = oldMessage.content.length;
@@ -278,11 +285,6 @@ bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
 
     XP.findOne({userID: message.author.id}, (err, level) => {
 		if(err) console.log(err);
-
-        let messLeng = message.content.length;
-        if(messLeng>800) messLeng = 800
-
-        let xpAdd = Math.floor(messLeng/2)+1;
 
 		//console.log(`${message.author.username}: ${xpAdd}xp`); // Не знаю зачем, раньше была для откладки
 
@@ -314,7 +316,7 @@ bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
 	})
 }catch(err){console.log(err)}})
 
-//  Если человек удалил сообщение, то уровень удаляется. ДА, с помозью такой фичи можно получить отрицательный XP, но мне пофиг)
+//  Если человек удалил сообщение, то уровень удаляется. ДА, с помощью такой фичи можно получить отрицательный XP, но мне пофиг)
 bot.on('messageDelete',async (message)=> {try{
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
