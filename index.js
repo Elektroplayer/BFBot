@@ -282,14 +282,14 @@ bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
 
     let xpAdd = (Math.floor(newMessLeng/2)+1) - (Math.floor(oldMessLeng/2)+1);
 
-    XP.findOne({userID: message.author.id}, (err, level) => {
+    XP.findOne({userID: oldMessage.author.id}, (err, level) => {
 		if(err) console.log(err);
 
 		//console.log(`${message.author.username}: ${xpAdd}xp`); // Не знаю зачем, раньше была для откладки
 
 		if(!level) {
 			var newXP =  new XP({
-				userID: message.author.id,
+				userID: oldMessage.author.id,
 				level: 0,
 				xp: xpAdd
 			})
