@@ -10,14 +10,18 @@ module.exports = {
             .addField('Аргументы:',`**user** - Имя получателя\n**count** - Количество денег`)
             .addField('Примеры:',`**e!give @user 100** - Передаст 100xp человеку @user\n**e!give <представь_что_тут_ID> 100** - Передаст 100xp человеку с ID <представь_что_тут_тот_же_ID>`)
             .addField('Могут использовать:','Все без исключений',true)
-            .addField('Последнее обновление:',`Версия 3.2`,true)
+            .addField('Последнее обновление:',`Версия 3.2.1`,true)
             )
         }
 
         if(!args[0]||!args[1]) return addlib.errors.notArgs(message)
-        let inUser  = message.guild.member(message.mentions.users.first() || message.guild.members.cache.get(args[0]) || message.guild.members.cache.find(m => m.user.username == args[0])).id;
-        if(!inUser) return addlib.errors.noUser(message)
+
+        inUser = message.mentions.users.first() || message.guild.members.cache.find(m => m.user.username == args[0]) || message.guild.members.cache.get(args[0]) //
+        if(!inUser) return addlib.errors.noUser(message);
+        inUser = message.guild.member(inUser).id;
+
         let outUser = message.author.id;
+        
         if(!/^[0-9]{1,}$/g.test(args[1])) return addlib.errors.falseArgs(message,'Нужны только цифры!');
         let num = Number(args[1]);
         if(num<=0) return addlib.errors.falseArgs(message,`Число может быть только положительным!`);

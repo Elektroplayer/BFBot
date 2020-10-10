@@ -16,15 +16,14 @@ module.exports = {
     run: (bot,message,args,con)=> {try{
         if(!args[0]) return addlib.errors.notArgs(message,'Введи аргумент help для подробностей!');
         else if(args[0] == "help") {
-            message.channel.send(con.defEmb.setTitle("Помощь по команде profile").setDescription("Информация о человеке").setFooter(con.footer)
+            message.channel.send(con.defEmb.setTitle("Помощь по команде random").setDescription("Рандомайзер").setFooter(con.footer)
             .addField('Аргументы:',`**word** - Следующими аргументами должен быть список слов из которых нужно выбрать одно\n**number** - Следующим аргументом должно быть одно от 0 до которого нужно выбрать рандомное или два числа между которыми нужно выбрать рандомное\n**user** - Рандомный человек с нашего сервера\n\n`)
-            .addField('Примеры:',`**e!word Кошка Кошечка Киска** - Выберет рандомное слово из предложенных\n**e!random number 10** -  Рандомное число от 0 до 10\n**e!random number 5 10** -  Рандомное число от 5 до 10\n**e!profile user** - Выберет рандомного человека`)
+            .addField('Примеры:',`**e!random word Кошка Кошечка Киска** - Выберет рандомное слово из предложенных\n**e!random number 10** -  Рандомное число от 0 до 10\n**e!random number 5 10** -  Рандомное число от 5 до 10\n**e!profile user** - Выберет рандомного человека`)
             .addField('Могут использовать:','Все без исключений',true)
-            .addField('Последнее обновление:',`Версия 3.2`,true)
+            .addField('Последнее обновление:',`Версия 3.2.1`,true)
             )
         }
         else if(args[0] == "word") {
-            console.log(args)
             if(!args[1] || !args[2]) return addlib.errors.notArgs(message,"А из чего выбирать?")
             message.channel.send(con.defEmb.setTitle(`${args[(Math.floor( Math.random() * (args.length-1) )+1)]}`))
         }

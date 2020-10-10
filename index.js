@@ -376,7 +376,7 @@ bot.on("message", async (message) => {try{
 
 //  Удаление ссылок приглашений
 bot.on("message", async (message) => {try{
-    if(message.author.bot) return; //  Не слушаем других ботов
+    //if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
 
     if(message.content.replace(/\s/g, '').includes("discord.gg/")) {
@@ -406,7 +406,7 @@ bot.on("message", async (message) => {try{
 
 //  Удаление ссылок приглашений после обновления сообщения
 bot.on("messageUpdate", async (oldMessage, message) => {try{
-    if(message.author.bot) return; //  Не слушаем других ботов
+    //if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
 
     if(message.content.replace(/\s/g, '').includes("discord.gg/")) {

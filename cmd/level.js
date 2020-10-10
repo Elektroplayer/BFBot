@@ -13,7 +13,7 @@ module.exports = {
             .addField('Примеры:',`**e!level** - покажет твой уровень\n**e!level @user** -  покажет уровень упомянутого пользователя\n**e!level 111111123456789101** - покажет уровень пользователя с таким ID\n**e!level UserName** - покажет уровень пользователя с таким именем *(НЕ НИКОМ НА СЕРВЕРЕ)*`)
             .addField('Сокращения:',`**e!xp, e!lvl**`)
             .addField('Могут использовать:','Все без исключений',true)
-            .addField('Последнее обновление:',`Версия 3.2`,true)
+            .addField('Последнее обновление:',`Версия 3.2.1`,true)
             )
         }
 
@@ -24,8 +24,9 @@ module.exports = {
             luser = message.author
             embed.setTitle("Твой уровень:")
         } else {
-            luser = message.guild.member(message.mentions.users.first() || message.guild.members.cache.get(args[0]) || message.guild.members.cache.find(m => m.user.username == args[0])).user;
+            luser = message.mentions.users.first() || message.guild.members.cache.find(m => m.user.username == args[0]) || message.guild.members.cache.get(args[0]) //
             if(!luser) return addlib.errors.noUser(message);
+            luser = message.guild.member(luser).user;
             embed.setTitle(`Уровень ${luser.username}`);
         }
     
