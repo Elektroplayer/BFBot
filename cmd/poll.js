@@ -20,7 +20,7 @@ module.exports = {
 			else return message.channel.send(emb.setTitle(poll)).then(async msg => {await msg.react("✅"); msg.react("❎")});
 		}
 	
-		messageArray  = message.content.split("+");
+		let messageArray  = message.content.split("+");
 		args          = messageArray.slice(1);
 	
 		if(!args[0]) return message.channel.send(emb.setTitle('?')).then(async msg => {await msg.react("✅"); msg.react("❎")});
@@ -30,7 +30,7 @@ module.exports = {
 			let i;
 			let l=0;
 			for(i=0;;i++) {
-				if(i>=10) return addlib.errors.castom(message,"Разрешено не больше 10 вариантов!");;
+				if(i>=10) return addlib.errors.castom(message,"Разрешено не больше 10 вариантов!");
 				if(args[i]) {
 					if(args[i].trim().length === 0) {l++;continue;}
 					poll = poll + `${i+1-l}. ` + args[i].replace(/^\s+|\s+$/g, '') + "\n"

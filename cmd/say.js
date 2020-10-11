@@ -1,4 +1,4 @@
-module.exports.run = async (bot,message, args,config) => {
+module.exports.run = async (bot,message, args) => {
     message.delete();
 
     let botmessage = args.join(" ");

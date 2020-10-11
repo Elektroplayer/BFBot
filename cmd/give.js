@@ -16,7 +16,7 @@ module.exports = {
 
         if(!args[0]||!args[1]) return addlib.errors.notArgs(message)
 
-        inUser = message.mentions.users.first() || message.guild.members.cache.find(m => m.user.username == args[0]) || message.guild.members.cache.get(args[0]) //
+        let inUser = message.mentions.users.first() || message.guild.members.cache.find(m => m.user.username == args[0]) || message.guild.members.cache.get(args[0]) //
         if(!inUser) return addlib.errors.noUser(message);
         inUser = message.guild.member(inUser).id;
 

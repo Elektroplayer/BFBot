@@ -1,7 +1,7 @@
 const strftime = require("strftime").localizeByIdentifier('ru_RU');
 module.exports = {
     run: (bot,message,args,con)=> {try{
-        notbots = message.guild.members.cache.filter(member => !member.user.bot)
+        let notbots = message.guild.members.cache.filter(member => !member.user.bot)
         message.channel.send(con.defEmb
         .setTitle("Информация о сервере")
         .setThumbnail(message.guild.iconURL())

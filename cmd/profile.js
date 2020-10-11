@@ -1,5 +1,5 @@
 const Discord    = require("discord.js");
-const strftime   = require("strftime").localizeByIdentifier('ru_RU');;
+const strftime   = require("strftime").localizeByIdentifier('ru_RU');
 const addlib     = require("../addLib.js");
 
 module.exports = {
@@ -50,7 +50,7 @@ module.exports = {
         let activit = message.guild.presences.cache.get(argsUser.id).activities
         let activ = ''
     
-        for(i=0;i<=activit.length-1;i++) {
+        for(let i=0;i<=activit.length-1;i++) {
             if (activit[i].type == 'CUSTOM_STATUS') {
                 activ = activ + ` \`\`\`Кастомный статус: ${activit[i].state}\`\`\` `
             } else {
@@ -58,7 +58,7 @@ module.exports = {
             }
         }
     
-        if(activ == '') activ = '\`\`\`Нет\`\`\`'
+        if(activ == '') activ = '```Нет```'
     
         let profileEmbed = new Discord.MessageEmbed().setTitle(argsUser.username).setColor('#0000ff').addField('Дата регистрации:', `${strftime('%B %d, %Y год в %H:%M', date2)}\n(${diff1} дней назад)`,true).addField('Подключился на сервер:', `${strftime('%B %d, %Y год в %H:%M', date3)}\n(${diff2} дней назад)`,true).addField(`ID:`,`${argsUser.id}`,true)
         .addField(`Имеет статус:`, game)

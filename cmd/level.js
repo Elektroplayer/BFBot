@@ -1,4 +1,4 @@
-const discord  = require('discord.js');
+//const discord  = require('discord.js');
 const XP       = require('../models/xp.js');
 const addlib   = require('../addLib.js');
 
@@ -46,7 +46,7 @@ module.exports = {
             } else {
                 let l = 0
                 let m
-                for (i = 0; i < res.length; i++) {
+                for (let i = 0; i < res.length; i++) {
                     let member = message.guild.members.cache.get(res[i].userID) || "Нет на сервере"
                     if (member.id === luser.id) {
                         m = i+1-l;

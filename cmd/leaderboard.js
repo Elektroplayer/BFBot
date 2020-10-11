@@ -1,5 +1,5 @@
 const XP       = require('../models/xp.js');
-const discord  = require('discord.js');
+//const discord  = require('discord.js');
 module.exports = {
     run: (bot,message,args,con)=> {try{
         if(args[0] == "help") {
@@ -21,7 +21,7 @@ module.exports = {
                 embed.addField("Ничего не найдено", "Упс...")
             } else if (res.length < 9) {
     
-                for (i=0; i < res.length; i++) {
+                for (let i=0; i < res.length; i++) {
                     let member = message.guild.members.cache.get(res[i].userID) || "Нет на сервере"
                     if (member === "Нет на сервере") {
                         embed.addField(`${i + 1}. ${member}`, `**Уровень:** ${res[i].level}\n**XP:** ${res[i].xp}`,true);
@@ -33,9 +33,9 @@ module.exports = {
                 
             } else {
     
-                ik = 9;
-                l = 0
-                for (i = 0; i < ik; i++) {
+                let ik = 9;
+                let l = 0
+                for (let i = 0; i < ik; i++) {
                     let member = message.guild.members.cache.get(res[i].userID) || "Нет на сервере"
                     if (member === "Нет на сервере") {
                         ik++
@@ -70,7 +70,7 @@ module.exports = {
 
                         embed.fields = []
                         l = 0
-                        for (i = 0; i < res.length-1; i++) {
+                        for (let i = 0; i < res.length-1; i++) {
 
                             let member = message.guild.members.cache.get(res[i].userID) || "Нет на сервере";
                             if (member === "Нет на сервере") {
@@ -89,7 +89,7 @@ module.exports = {
                     collector.on('end', async () => {
                         try {
                             await msg.reactions.removeAll()
-                        } catch (error) {}
+                        } catch (error) {console.log(error)}
                     })
                 })
             }

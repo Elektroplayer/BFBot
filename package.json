@@ -14,5 +14,8 @@
     "mongoose": "^5.10.7",
     "mongoose-ping": "^0.1.1",
     "strftime": "^0.10.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.11.0"
   }
 }

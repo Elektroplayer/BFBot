@@ -1,9 +1,3 @@
-/*
-Задания:
-1. Может пора подключать настройки к БД? А?
-2. Нужно пересмотреть report.js.
-Код давно не обновлялся, я думаю, работать будет, но нужно перепроверить и оптимизировать с новыми знаниями
-*/
 
 //  Подключаем библиотеки!
 const discord   = require('discord.js');
@@ -16,7 +10,7 @@ const CONFIG = require('./config.json'); //  Подключаем конфиг
 //const SETTINGS = require('./settings.js'); //  Подключаем настройки
 const XP     = require('./models/xp.js'); //  Подключаем уровень
 
-bot = new discord.Client(); //  Создаём клиента
+const bot = new discord.Client(); //  Создаём клиента
 bot.login(CONFIG.token); //  И логиним его из конфига
 bot.commands = new discord.Collection(); // Тут будут храниться команды
 mongoose.connect(CONFIG.mongoToken, {useNewUrlParser: true, useUnifiedTopology: true}); //  Логиним mongoose из конфига
@@ -112,12 +106,12 @@ fs.readdir("./cmd/", (err, files) => {
 		return;
 	}
 
-	jsfile.forEach((f, i) =>{
+	jsfile.forEach((f) =>{
 		let props = require(`./cmd/${f}`);
 		console.log(`${f} загружен!`);
 		if(typeof props.cmd == 'string') bot.commands.set(`${props.cmd}`, props);
 		else if(typeof props.cmd == 'object') {
-			for(i2=0;i2<=props.cmd.length-1;i2++) {
+			for(let i2=0;i2<=props.cmd.length-1;i2++) {
 				bot.commands.set(props.cmd[i2], props);
 			}
         }
@@ -125,15 +119,16 @@ fs.readdir("./cmd/", (err, files) => {
 	});
 });
 
+
 // Просмотр ВСЕХ евентов (да читы, а хотя нет, раз это есть в официальной библеотеке, то это тоже самое, что не пользоваться имбалансным спелом))) )
 bot.on('raw', async (event) => { try {
     
     if ((event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") && event.d.emoji.name == '🆙') { // Выдача xp за реакцию
         let message = await bot.guilds.cache.get(event.d.guild_id).channels.cache.get(event.d.channel_id).messages.fetch(event.d.message_id)
 
-        if(!Boolean(message.reactions.cache.get('🆙').users.cache.get(bot.user.id))) return;
+        if(!message.reactions.cache.get('🆙') && !message.reactions.cache.get('🆙').users.cache.get(bot.user.id)) return;
 
-        xpAdd = 50;
+        let xpAdd = 50;
         if (event.t === "MESSAGE_REACTION_REMOVE") xpAdd=-xpAdd;
 
         XP.findOne({userID:event.d.user_id}, (err, level) => {
@@ -160,7 +155,7 @@ bot.on('raw', async (event) => { try {
 			let emoji      = event.d.emoji.name;
 			let reactions  = ["⬛", "⬜", "🟧","🟦","🟥","🟫","🟩","🟨","9️⃣","🔟"];
 			let roles      = ['561961792830439426','738376044729597952','451994597112152074','451994596197531659', '458191962839711754','688328058796900385','451994592271663116','565557833639264257','451994600379383820','451994599448248321'];
-			for(i=0;i<=roles.length-1;i++) {
+			for(let i=0;i<=roles.length-1;i++) {
 				if(emoji == reactions[i]) {
 					if (event.t === "MESSAGE_REACTION_ADD") member.roles.add(guild.roles.cache.get(roles[i])).catch(console.error);
 					else member.roles.remove(guild.roles.cache.get(roles[i])).catch(console.error);
@@ -189,13 +184,17 @@ bot.on('raw', async (event) => { try {
 	} else return;
 }catch(err){console.log(err)}})
 
+
 //  Уровневая система
 bot.on('message', async (message)=>{try{
+    if(message.guild.id !== "449579955811254275") return;
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
 
+    //console.log(message.member.roles.cache.get('763328341574025267'));
+
     let ok=true //  Проверка на исключение
-    for(i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
+    for(let i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
     if(!ok) return;
 
     if(timers[message.author.id]) { //  Смотрим кулдаун. Тут он умный)
@@ -216,15 +215,7 @@ bot.on('message', async (message)=>{try{
 
         let xpAdd = Math.floor(messLeng/2)+1;
 
-        //let xpAdd = Math.floor(Math.random() * message.content.length) + 1;
-
-        /*
-        if(message.channel.id == "751832684246073344") {
-            xpAdd = Math.ceil(xpAdd*0,75);
-
-            if(xpAdd >75) xpAdd = 75;
-        } else if(xpAdd >150) xpAdd = 150
-        */
+        //if(message.member.roles.has("763328341574025267")) xpAdd+=xpAdd; //  Увеличение XP бустерам
 
 		//console.log(`${message.author.username}: ${xpAdd}xp`); // Не знаю зачем, раньше была для откладки
 
@@ -245,7 +236,7 @@ bot.on('message', async (message)=>{try{
 
 			if(nxtLvl <= level.xp){
 
-				otnxp        = level.xp - nxtLvl;
+				let otnxp        = level.xp - nxtLvl;
 				level.level  = curlvl + 1;
                 level.xp     = otnxp;
                 
@@ -253,7 +244,8 @@ bot.on('message', async (message)=>{try{
                     //  Попытка сделать через коллектор и не городить велосипед была... Как уже понятно, она провалилась
                     
                     setTimeout(()=>{
-                        message.reactions.cache.get("🆙").remove(bot.user.id);
+                        if(message.deleted || !message.reactions) return;
+                        message.reactions.cache.get("🆙").remove();
                     }, 10000);
                 });
 		
@@ -272,7 +264,7 @@ bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
     if(oldMessage.channel.type == 'dm') return; //  Не слушаем ЛС
 
     let ok=true; //  Проверка на исключение
-    for(i=0;i<=xpExceptions.length-1;i++) { if(oldMessage.channel.id === xpExceptions[i]) { ok=false; break;}}
+    for(let i=0;i<=xpExceptions.length-1;i++) { if(oldMessage.channel.id === xpExceptions[i]) { ok=false; break;}}
     if(!ok) return;
     
     let oldMessLeng = oldMessage.content.length;
@@ -281,6 +273,7 @@ bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
     if(newMessLeng>800) newMessLeng = 800;
 
     let xpAdd = (Math.floor(newMessLeng/2)+1) - (Math.floor(oldMessLeng/2)+1);
+    //if(message.member.roles.has("763328341574025267")) xpAdd+=xpAdd; //  Увеличение XP бустерам
 
     XP.findOne({userID: oldMessage.author.id}, (err, level) => {
 		if(err) console.log(err);
@@ -303,7 +296,7 @@ bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
 
 			if(nxtLvl <= level.xp){
 
-				otnxp        = level.xp - nxtLvl;
+				let otnxp        = level.xp - nxtLvl;
 				level.level  = curlvl + 1;
                 level.xp     = otnxp;
                 
@@ -321,7 +314,7 @@ bot.on('messageDelete',async (message)=> {try{
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
 
     let ok=true //  Проверка на исключение
-    for(i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
+    for(let i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
     if(!ok) return;
     
     XP.findOne({userID: message.author.id}, (err, level) => {
@@ -331,6 +324,7 @@ bot.on('messageDelete',async (message)=> {try{
         if(messLeng>800) messLeng = 800
 
         let xpAdd = Math.floor(messLeng/2)+1;
+        //if(message.member.roles.has("763328341574025267")) xpAdd+=xpAdd; //  Увеличение XP бустерам
 
 		//console.log(`${message.author.username}: ${xpAdd}xp`); // Не знаю зачем, раньше была для откладки
 
@@ -349,6 +343,7 @@ bot.on('messageDelete',async (message)=> {try{
 		}
 	})
 }catch(err){console.log(err)}});
+
 
 //  Для выполнения команд
 bot.on("message", async (message) => {try{
@@ -374,6 +369,7 @@ bot.on("message", async (message) => {try{
     });
 }catch (err) {console.log(err)}})
 
+
 //  Удаление ссылок приглашений
 bot.on("message", async (message) => {try{
     //if(message.author.bot) return; //  Не слушаем других ботов
@@ -384,39 +380,9 @@ bot.on("message", async (message) => {try{
         if(message.author.id == message.guild.owner.id) return; //  Исключаем создателя
 
         let ok=true //  Проверка на исключение
-        for(i=0;i<=logSettings.exceptions.roles.length-1;i++) { if(message.member.roles.cache.has(logSettings.exceptions.roles[i])) { ok=false; break;}}
-        for(i=0;i<=logSettings.exceptions.channels.length-1;i++) { if(message.channel.id == logSettings.exceptions.channels[i]) { ok=false; break;}}
-        for(i=0;i<=logSettings.exceptions.members.length-1;i++) { if(message.author.id == logSettings.exceptions.members[i]) { ok=false; break;}}
-        
-        if(!ok) return; //  Если это испключение, то не продолжаем
-
-        message.delete() //  Удаляем сообщение
-        message.channel.send(new discord.MessageEmbed().setColor('ff0000').setTitle(`${message.author.username}, реклама на этом сервере запрещена!`)).then(msg=>msg.delete({timeout:5000}));
-
-        let emb = new discord.MessageEmbed().setColor(color).setTitle('Нарушение!').addField('Нарушитель:',`<@${message.author.id}> \nID: "${message.author.id}"`,true).addField('Канал:',`${message.channel.name}`,true).addField('Время', strftime("%B %d, %H:%M", new Date(message.createdAt)),true).addField('Причина:','Отправка ссылок-приглашений на другие сервера');
-        
-        if(logSettings.logs.enabled) { //  Смотрим, включено ли логирование и если да, то смотрим доступность канала. Если всё норм, то отправляем сообщение
-            if(message.guild.channels.cache.get(logSettings.logs.channel)) message.guild.channels.cache.get(logSettings.logs.channel).send(emb);
-            else message.guild.members.cache.get(message.guild.owner.id).send(new discord.MessageEmbed().setTitle('Лог канала не существует!').setDescription('Выключите функцию логирования или задайте другой канал!').setColor('ff0000')); //  Отправляем сообщение создателю, что канала для логов не сущетсвует. Пускай вырубает или изменяет.
-        }
-        if(logSettings.logs.ownerDirectMessage) message.guild.owner.send(emb); //  Смотрим включено ли логгирование в ЛС и если да, то отправляем ЛС человеку.
-	};
-
-}catch (err) {console.log(err)}});
-
-//  Удаление ссылок приглашений после обновления сообщения
-bot.on("messageUpdate", async (oldMessage, message) => {try{
-    //if(message.author.bot) return; //  Не слушаем других ботов
-    if(message.channel.type == 'dm') return; //  Не слушаем ЛС
-
-    if(message.content.replace(/\s/g, '').includes("discord.gg/")) {
-        if(!logSettings.enabled) return; //  Не обращаем внимания, если проверка выключена
-        if(message.author.id == message.guild.owner.id) return; //  Исключаем создателя
-
-        let ok=true //  Проверка на исключение
-        for(i=0;i<=logSettings.exceptions.roles.length-1;i++) { if(message.member.roles.cache.has(logSettings.exceptions.roles[i])) { ok=false; break;}}
-        for(i=0;i<=logSettings.exceptions.channels.length-1;i++) { if(message.channel.id == logSettings.exceptions.channels[i]) { ok=false; break;}}
-        for(i=0;i<=logSettings.exceptions.members.length-1;i++) { if(message.author.id == logSettings.exceptions.members[i]) { ok=false; break;}}
+        for(let i=0;i<=logSettings.exceptions.roles.length-1;i++) { if(message.member.roles.cache.has(logSettings.exceptions.roles[i])) { ok=false; break;}}
+        for(let i=0;i<=logSettings.exceptions.channels.length-1;i++) { if(message.channel.id == logSettings.exceptions.channels[i]) { ok=false; break;}}
+        for(let i=0;i<=logSettings.exceptions.members.length-1;i++) { if(message.author.id == logSettings.exceptions.members[i]) { ok=false; break;}}
         
         if(!ok) return; //  Если это испключение, то не продолжаем
 
@@ -433,6 +399,37 @@ bot.on("messageUpdate", async (oldMessage, message) => {try{
 	}
 
 }catch (err) {console.log(err)}});
+
+//  Удаление ссылок приглашений после обновления сообщения
+bot.on("messageUpdate", async (oldMessage, message) => {try{
+    //if(message.author.bot) return; //  Не слушаем других ботов
+    if(message.channel.type == 'dm') return; //  Не слушаем ЛС
+
+    if(message.content.replace(/\s/g, '').includes("discord.gg/")) {
+        if(!logSettings.enabled) return; //  Не обращаем внимания, если проверка выключена
+        if(message.author.id == message.guild.owner.id) return; //  Исключаем создателя
+
+        let ok=true //  Проверка на исключение
+        for(let i=0;i<=logSettings.exceptions.roles.length-1;i++) { if(message.member.roles.cache.has(logSettings.exceptions.roles[i])) { ok=false; break;}}
+        for(let i=0;i<=logSettings.exceptions.channels.length-1;i++) { if(message.channel.id == logSettings.exceptions.channels[i]) { ok=false; break;}}
+        for(let i=0;i<=logSettings.exceptions.members.length-1;i++) { if(message.author.id == logSettings.exceptions.members[i]) { ok=false; break;}}
+        
+        if(!ok) return; //  Если это испключение, то не продолжаем
+
+        message.delete() //  Удаляем сообщение
+        message.channel.send(new discord.MessageEmbed().setColor('ff0000').setTitle(`${message.author.username}, реклама на этом сервере запрещена!`)).then(msg=>msg.delete({timeout:5000}));
+
+        let emb = new discord.MessageEmbed().setColor(color).setTitle('Нарушение!').addField('Нарушитель:',`<@${message.author.id}> \nID: "${message.author.id}"`,true).addField('Канал:',`${message.channel.name}`,true).addField('Время', strftime("%B %d, %H:%M", new Date(message.createdAt)),true).addField('Причина:','Отправка ссылок-приглашений на другие сервера');
+        
+        if(logSettings.logs.enabled) { //  Смотрим, включено ли логирование и если да, то смотрим доступность канала. Если всё норм, то отправляем сообщение
+            if(message.guild.channels.cache.get(logSettings.logs.channel)) message.guild.channels.cache.get(logSettings.logs.channel).send(emb);
+            else message.guild.members.cache.get(message.guild.owner.id).send(new discord.MessageEmbed().setTitle('Лог канала не существует!').setDescription('Выключите функцию логирования или задайте другой канал!').setColor('ff0000')); //  Отправляем сообщение создателю, что канала для логов не сущетсвует. Пускай вырубает или изменяет.
+        }
+        if(logSettings.logs.ownerDirectMessage) message.guild.owner.send(emb); //  Смотрим включено ли логгирование в ЛС и если да, то отправляем ЛС человеку.
+	}
+
+}catch (err) {console.log(err)}});
+
 
 // Когда пришёл новый человек
 bot.on("guildMemberAdd", member =>  {

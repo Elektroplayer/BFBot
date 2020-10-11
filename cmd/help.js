@@ -5,11 +5,11 @@ module.exports = {
         }
 
         let categories = con.categories;
-        emb = con.defEmb.setTitle('Помощь')
+        let emb = con.defEmb.setTitle('Помощь')
         let text =''
-        for(i1=0;i1<=categories.length-1;i1++) {
+        for(let i1=0;i1<=categories.length-1;i1++) {
             text = ''
-            for(i2=0;i2<=con.cmds.length-1;i2++) {
+            for(let i2=0;i2<=con.cmds.length-1;i2++) {
                 if(con.cmds[i2].category == categories[i1]) text = text+`**${con.prefix}${con.cmds[i2].cmd}** - ${con.cmds[i2].desc}\n`
             }
             emb.addField(categories[i1],text);

@@ -3,13 +3,13 @@ const {MessageEmbed}  = require('discord.js');
 const colors          = require('../colors.json');
 
 module.exports = {
-    run: (bot,message,args,con)=> {try{
+    run: (bot,message,args)=> {try{
         //message.delete();
 
         if(message.author.id != "283666032823107585") return message.channel.send(MessageEmbed().setColor(colors.red).setTitle('У тебя нет права суперпользователя!'));
 
         if(args[0] == "xp") {
-            user = message.mentions.users.first().id
+            let user = message.mentions.users.first().id
             let num
             if(args[2]) num = Number(args[2])
             XP.findOne({userID: user}, (err, level) => {
