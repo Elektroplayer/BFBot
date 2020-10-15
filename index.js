@@ -123,7 +123,8 @@ fs.readdir("./cmd/", (err, files) => {
 // Просмотр ВСЕХ евентов (да читы, а хотя нет, раз это есть в официальной библеотеке, то это тоже самое, что не пользоваться имбалансным спелом))) )
 bot.on('raw', async (event) => { try {
     
-    if ((event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") && event.d.emoji.name == '🆙') { // Выдача xp за реакцию
+    //  Оставлено до лучших времён.....
+    /*if ((event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") && event.d.emoji.name == '🆙') { // Выдача xp за реакцию
         let message = await bot.guilds.cache.get(event.d.guild_id).channels.cache.get(event.d.channel_id).messages.fetch(event.d.message_id)
 
         if(!message.reactions.cache.get('🆙') && !message.reactions.cache.get('🆙').users.cache.get(bot.user.id)) return;
@@ -148,7 +149,7 @@ bot.on('raw', async (event) => { try {
             }
         })
         
-	} else if (event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") { // Роли по реакции
+	} else */ if (event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") { // Роли по реакции
 		if(event.d.message_id == '738369557961506886' && event.d.user_id != bot.user.id) {
 			let guild      = bot.guilds.cache.get(event.d.guild_id);
 			let member     = guild.members.cache.get(event.d.user_id);
@@ -187,9 +188,9 @@ bot.on('raw', async (event) => { try {
 
 //  Уровневая система
 bot.on('message', async (message)=>{try{
-    if(message.guild.id !== "449579955811254275") return;
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
+    if(message.guild.id !== "449579955811254275") return;
 
     //console.log(message.member.roles.cache.get('763328341574025267'));
 
@@ -240,14 +241,16 @@ bot.on('message', async (message)=>{try{
 				level.level  = curlvl + 1;
                 level.xp     = otnxp;
                 
-                message.react('🆙').then(message=>{
+                message.react('🆙')
+                // Оставлено до лучших времён......
+                /* .then(message=>{
                     //  Попытка сделать через коллектор и не городить велосипед была... Как уже понятно, она провалилась
                     
                     setTimeout(()=>{
                         if(message.deleted || !message.reactions) return;
                         message.reactions.cache.get("🆙").remove();
                     }, 10000);
-                });
+                }); */
 		
 				//embed = new discord.MessageEmbed().setTitle("Новый уровень!").setColor("#0000FF").addField(`АТЛИЧНА, ${message.author.username}!!! Ты достиг **${curlvl+1} уровня**!`, "Продолжай в том же духе!").setImage("attachment://lvlup.png")
 				//message.channel.send({embed: embed, files: [new discord.MessageAttachment("./img/lvlup.png", 'lvlup.png')]}).then(msg => {msg.delete({timeout:10000})});
@@ -363,7 +366,7 @@ bot.on("message", async (message) => {try{
         "color": color,
         "defEmb": new discord.MessageEmbed().setColor(color),
         "footer": message.author.username +' | © Лига "Синее Пламя"',
-        "categories": ['Общее','Уровень','Прочее','Элитное'],
+        "categories": ['Общее','Уровень',"Игры",'Прочее','Элитное'],
         "moderators": ['449585603567157258','449590549683634176','652500169354510357'],
         "logchannel": allSettings.logChannel
     });

@@ -16,7 +16,7 @@ module.exports = {
         if(!/^[0-9]{1,}$/g.test(args[0]) || args[0] == 0) return addlib.errors.falseArgs(message, "Можно вводить только цифры, большие 0!");
         let ok = false;
         for(let i=0;i<=con.moderators.length-1;i++) {if(message.member.roles.cache.has(con.moderators[i])) ok = true;}
-        if(!ok) return addlib.errors.notPerm(message);
+        if(!ok) return addlib.errors.notPerms(message);
 
         message.channel.bulkDelete(args[0],true).then(() => {
             message.channel.send(con.defEmb.setColor('#00ff00').setTitle(`Очищено ${args[0]} сообщений.`)).then(msg => msg.delete({timeout:5000}));
