@@ -1,5 +1,9 @@
 module.exports = {
     run: (bot,message,args,con)=> {try{
+        if(args[0] == "help") {
+            return message.channel.send(con.defEmb.setTitle("Тебе серьёзно нужна помощь по этой команде?").setDescription("Мне лень)").setFooter(con.footer))
+        }
+
         let botembed = con.defEmb
         .setTitle("Информация о боте!")
         .setThumbnail(bot.user.displayAvatarURL)

@@ -1,6 +1,10 @@
 const strftime = require("strftime").localizeByIdentifier('ru_RU');
 module.exports = {
     run: (bot,message,args,con)=> {try{
+        if(args[0] == "help") {
+            return message.channel.send(con.defEmb.setTitle("Тебе серьёзно нужна помощь по этой команде?").setDescription("Мне лень)").setFooter(con.footer))
+        }
+
         let notbots = message.guild.members.cache.filter(member => !member.user.bot)
         message.channel.send(con.defEmb
         .setTitle("Информация о сервере")
