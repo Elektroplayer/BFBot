@@ -18,5 +18,5 @@ module.exports = {
     }catch(err){console.log(err)}},
     cmd: ["res","ping"],
     desc: "Ресурсы и пинг",
-    category: "Прочее"
+    category: "Общее"
 }

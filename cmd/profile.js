@@ -70,5 +70,5 @@ module.exports = {
     }catch(err){console.log(err)}},
     cmd: ["profile","me"],
     desc: "Информация о человеке",
-    category: "Общее"
+    category: "Прочее"
 }

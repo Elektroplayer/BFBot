@@ -53,5 +53,5 @@ module.exports = {
     },
     cmd: "poll",
     desc: "Создание голосований",
-    category: "Общее"
+    category: "Прочее"
 }

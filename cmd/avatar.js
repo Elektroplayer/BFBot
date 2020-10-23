@@ -19,5 +19,5 @@ module.exports = {
     }catch(err){console.log(err)}},
     cmd: ["avatar","ava"],
     desc: "Показать аватар",
-    category: "Общее"
+    category: "Прочее"
 }
