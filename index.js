@@ -4,6 +4,8 @@ const discord   = require('discord.js');
 const mongoose  = require('mongoose'); //  Пока что не нужно
 const strftime  = require('strftime').localizeByIdentifier('ru_RU'); //  И сразу локализуем
 const fs        = require('fs');
+
+const { GiveawaysManager } = require("discord-giveaways");
 //const addlib    = require('./addLib.js'); //  Моя собственная разработка)
 
 const CONFIG = require('./config.json'); //  Подключаем конфиг
@@ -14,6 +16,17 @@ const bot = new discord.Client(); //  Создаём клиента
 bot.login(CONFIG.token); //  И логиним его из конфига
 bot.commands = new discord.Collection(); // Тут будут храниться команды
 mongoose.connect(CONFIG.mongoToken, {useNewUrlParser: true, useUnifiedTopology: true}); //  Логиним mongoose из конфига
+
+bot.giveawayManager = new GiveawaysManager(bot, {
+    storage: "data/giveaways.json",
+    updateCountdownEvery: 10000,
+    default: {
+      embedColor: "BLUE",
+      botsCanWin: false,
+      reaction: "🎉",
+      embedColorEnd: "BLUE",
+    },
+});
 
 class dynamicTimer {  //  Динамический таймер! Не моя разработка, но я довёл её до ума. В прошлом она не работала
     constructor(func, delay) {
@@ -366,7 +379,7 @@ bot.on("message", async (message) => {try{
         "color": color,
         "defEmb": new discord.MessageEmbed().setColor(color),
         "footer": message.author.username +' | © Лига "Синее Пламя"',
-        "categories": ['Общее','Уровень',"Игры",'Прочее','Элитное'],
+        "categories": ['Общее','Уровень','Прочее','Элитное'],
         "moderators": ['449585603567157258','449590549683634176','652500169354510357'],
         "logchannel": allSettings.logChannel
     });

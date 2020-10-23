@@ -6,11 +6,11 @@ const strftime  = require('strftime');
 module.exports = {
     run: (bot,message,args,con)=> {try{
         if(args[0] == "help") {
-            return message.channel.send(con.defEmb.setTitle("Помощь по команде profile").setDescription("Информация о человеке").setFooter(con.footer)
-            .addField('Аргументы:',`**user** - Человек, на которого подаётся жалоба\n**reason** - Причина`)
+            return message.channel.send(con.defEmb.setTitle("Помощь по команде report").setDescription("Отправка жалобы на человека").setFooter(con.footer)
+            .addField('Аргументы:',`**<user> <причина>** - Создаст репорт на человека по заданной причине`)
             .addField('Примеры:',`**e!report @Electroplayer Собака, допустил ошибку в тексте** - Отправит репорт на ~~меня~~ Electroplayer по причине "Собака, допустил ошибку в тексте"`)
             .addField('Могут использовать:','Все без исключений',true)
-            .addField('Последнее обновление:',`Версия 3.2`,true)
+            .addField('Последнее обновление:',`Версия 3.3.1`,true)
             )
         }
 
@@ -41,46 +41,3 @@ module.exports = {
     desc: "Отправка жалобы на человека",
     category: "Элитное"
 }
-
-        /*
-
-        //  На всякий случай
-        let emb = {
-            "embed": {
-                "color": 16711680,
-                "fields": [
-                    {
-                        "name": "Отправитель:",
-                        "value": `${message.author}\nID: "${message.author.id}"`,
-                        "inline": true
-                    },
-                    {
-                        "name": "Нарушитель:",
-                        "inline": true,
-                        "value": `${rUser}\nID: "${rUser.id}"`
-                    },
-                    {
-                        "name": '\u200b',
-                        "value": '\u200b',
-                        "inline": true
-                    },
-                    {
-                        "name": "Канал:",
-                        "value": `<#${message.channel.id}>`,
-                        "inline": true
-                    },
-                    {
-                        "name": "Время:",
-                        "value": strftime("%B %d, %H:%M", new Date(message.createdAt)),
-                        "inline": true
-                    },
-                    {
-                        "name": "Причина:",
-                        "value": reason
-                    }
-                ],
-                "title": "Жалоба",
-                "footer": con.footer
-            }
-        }
-        */

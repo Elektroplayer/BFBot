@@ -5,9 +5,10 @@ module.exports = {
         if(args[0] == "help") {
             return message.channel.send(con.defEmb.setTitle("Помощь по команде leaderboard").setDescription("Рейтинг по уровню").setFooter(con.footer)
             .addField('Аргументы:',`Нету`)
-            .addField('Примеры:',`**e!leaderbard** - Покажет рейтинг\n**e!lb** - Тоже покажет рейтинг`)
+            .addField('Примеры:',`**e!leaderbard** - Покажет рейтинг`)
+            .addField('Сокращения:',`**e!lb**`)
             .addField('Могут использовать:','Все без исключений',true)
-            .addField('Последнее обновление:',`Версия 3.2.1`,true)
+            .addField('Последнее обновление:',`Версия 3.3.1`,true)
             )
         }
 

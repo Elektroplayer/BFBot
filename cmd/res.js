@@ -12,7 +12,7 @@ module.exports = {
         .setTitle("Понг!")
         .addField(`Пинг:`, `${Math.round(bot.ws.ping)} ms`,true)
         .addField(`Выделенные ресурсы:`, `${Math.round(used * 100) / 100} МБ`,true)
-        .addField(`Время работы:`,`${d}:${h}:${m}:${s}:${ms}`,true)
+        .addField(`Время работы:`,`${d} : ${h} : ${m} : ${s}.${ms}`,true)
         .setFooter(con.footer)
         message.channel.send(resEmbed);
     }catch(err){console.log(err)}},

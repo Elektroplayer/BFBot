@@ -7,10 +7,10 @@ module.exports = {
 
         if(args[0] == "help") {
             return message.channel.send(con.defEmb.setTitle("Помощь по команде create").setDescription("Создать голосовой канал").setFooter(con.footer)
-            .addField('Аргументы:',`**user** - Имя получателя\n**count** - Количество денег`)
+            .addField('Аргументы:',`**<имя получателя> <количество денег>** - Передаст данному человеку указанную сумму`)
             .addField('Примеры:',`**e!give @user 100** - Передаст 100xp человеку @user\n**e!give <представь_что_тут_ID> 100** - Передаст 100xp человеку с ID <представь_что_тут_тот_же_ID>`)
             .addField('Могут использовать:','Все без исключений',true)
-            .addField('Последнее обновление:',`Версия 3.2.1`,true)
+            .addField('Последнее обновление:',`Версия 3.3.1`,true)
             )
         }
 
@@ -34,15 +34,15 @@ module.exports = {
             } else {
                 let xpAll = 0;
                 let i=0;
-                for(;i<=level.level;i++) {xpAll += Math.ceil(Math.sqrt(10000 + Math.pow(i, 2) * 300 * Math.pow(1.2, i)));}
+                for(;i<=level.level;i++) {xpAll += (Math.floor(i/2)+1);}
                 xpAll+=level.xp-num;
                 
                 if(xpAll<0) return addlib.errors.castom(message,"Мало XP!");
 
                 i=0;
                 for(;;i++) {
-                    if(Math.ceil(Math.sqrt(10000 + Math.pow(i, 2) * 300 * Math.pow(1.2, i)))>xpAll) break;
-                    else xpAll-=Math.ceil(Math.sqrt(10000 + Math.pow(i, 2) * 300 * Math.pow(1.2, i)));
+                    if((Math.floor(i/2)+1)>xpAll) break;
+                    else xpAll-=(Math.floor(i/2)+1);
                 }
 
                 level.level = i-1;
@@ -59,8 +59,8 @@ module.exports = {
                 let xpAll = num;
                 let i=0;
                 for(;;i++) {
-                    if(Math.ceil(Math.sqrt(10000 + Math.pow(i, 2) * 300 * Math.pow(1.2, i)))>xpAll) break;
-                    else xpAll-=Math.ceil(Math.sqrt(10000 + Math.pow(i, 2) * 300 * Math.pow(1.2, i)));
+                    if((Math.floor(i/2)+1)>xpAll) break;
+                    else xpAll-=(Math.floor(i/2)+1);
                 }
 
                 var newXP =  new XP({
@@ -76,13 +76,13 @@ module.exports = {
             } else {
                 let xpAll = 0
                 let i=0;
-                for(;i<=level.level;i++) {xpAll += Math.ceil(Math.sqrt(10000 + Math.pow(i, 2) * 300 * Math.pow(1.2, i)));}
+                for(;i<=level.level;i++) {xpAll += (Math.floor(i/2)+1);}
                 xpAll+=level.xp+num
 
                 i=0
                 for(;;i++) {
-                    if(Math.ceil(Math.sqrt(10000 + Math.pow(i, 2) * 300 * Math.pow(1.2, i)))>xpAll) break;
-                    else xpAll-=Math.ceil(Math.sqrt(10000 + Math.pow(i, 2) * 300 * Math.pow(1.2, i)));
+                    if((Math.floor(i/2)+1)>xpAll) break;
+                    else xpAll-=(Math.floor(i/2)+1);
                 }
 
                 level.level = i-1
