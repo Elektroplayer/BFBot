@@ -6,9 +6,9 @@ module.exports = {
     run: (bot,message,args,con)=> {try{
 
         if(args[0] == "help") {
-            return message.channel.send(con.defEmb.setTitle("Помощь по команде create").setDescription("Создать голосовой канал").setFooter(con.footer)
+            return message.channel.send(con.defEmb.setTitle("Помощь по команде give").setDescription("Передать свой уровень другому человеку").setFooter(con.footer)
             .addField('Аргументы:',`**<имя получателя> <количество денег>** - Передаст данному человеку указанную сумму`)
-            .addField('Примеры:',`**e!give @user 100** - Передаст 100xp человеку @user\n**e!give <представь_что_тут_ID> 100** - Передаст 100xp человеку с ID <представь_что_тут_тот_же_ID>`)
+            .addField('Примеры:',`**e!give @user 100** - Передаст 100xp человеку @user\n**e!give <представь\\_что\\_тут\\_ID> 100** - Передаст 100xp человеку с ID <представь\\_что\\_тут\\_тот\\_же\\_ID>`)
             .addField('Могут использовать:','Все без исключений',true)
             .addField('Последнее обновление:',`Версия 3.3.1`,true)
             )
