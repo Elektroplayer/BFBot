@@ -28,7 +28,7 @@ module.exports = {
 
         let ok = true;
         
-        await XP.findOne({userID: outUser}, (err, level) => {
+        XP.findOne({userID: outUser}, (err, level) => {
             if(err) console.log(err);
                     
             if(!level) {
@@ -56,55 +56,55 @@ module.exports = {
     
                 level.save().catch(err => console.log(err));
             }
-        })
 
-        if(!ok) return addlib.errors.castom(message,"Мало XP!");
+            if(!ok) return addlib.errors.castom(message,"Мало XP!");
 
-        XP.findOne({userID: inUser}, (err, level) => {
-            if(err) console.log(err);
-                    
-            if(!level) {
-                let xpAll = num;
-                let i=0;
-                for(;;i++) {
-                    console.log(i)
-                    if(400+(120*i*2.5)>xpAll) break;
-                    else xpAll-= 400+(120*i*2.5);
+            XP.findOne({userID: inUser}, (err, level) => {
+                if(err) console.log(err);
+                        
+                if(!level) {
+                    let xpAll = num;
+                    let i=0;
+                    for(;;i++) {
+                        console.log(i)
+                        if(400+(120*i*2.5)>xpAll) break;
+                        else xpAll-= 400+(120*i*2.5);
+                    }
+
+                    console.log(`${i-1}, ${xpAll}`)
+
+                    var newXP = new XP({
+                        userID: inUser,
+                        level: i,
+                        xp: xpAll
+                    })
+
+                    newXP.save().catch(err => console.log(err))
+
+                    message.channel.send(new discord.MessageEmbed().setColor('00ff00').setTitle(`Транзакция в ${num}XP была успешно завершена!`).setDescription(`Получатель: ${message.guild.members.cache.get(inUser)}`).setFooter(con.footer))
+                    //addlib.errors.success(message,`XP был успешно переведён ${message.guild.cache.get(inUser)}!`)
+                } else {
+                    let xpAll = 0
+                    let i=0;
+                    for(;i<=level.level;i++) {xpAll += 400+(120*i*2.5);}
+                    xpAll+=level.xp+num
+
+                    i=0
+                    for(;;i++) {
+                        if(400+(120*i*2.5)>xpAll) break;
+                        else xpAll-=400+(120*i*2.5);
+                    }
+
+                    console.log(`${i-1}, ${xpAll}`)
+
+                    level.level = i-1
+                    level.xp = xpAll
+
+                    level.save().catch(err => console.log(err))
+
+                    message.channel.send(new discord.MessageEmbed().setColor('00ff00').setTitle(`Транзакция в ${num}XP была успешно завершена!`).setDescription(`Получатель: ${message.guild.members.cache.get(inUser)}`).setFooter(con.footer))
                 }
-
-                console.log(`${i-1}, ${xpAll}`)
-
-                var newXP = new XP({
-                    userID: inUser,
-                    level: i,
-                    xp: xpAll
-                })
-
-                newXP.save().catch(err => console.log(err))
-
-                message.channel.send(new discord.MessageEmbed().setColor('00ff00').setTitle(`Транзакция в ${num}XP была успешно завершена!`).setDescription(`Получатель: ${message.guild.members.cache.get(inUser)}`).setFooter(con.footer))
-                //addlib.errors.success(message,`XP был успешно переведён ${message.guild.cache.get(inUser)}!`)
-            } else {
-                let xpAll = 0
-                let i=0;
-                for(;i<=level.level;i++) {xpAll += 400+(120*i*2.5);}
-                xpAll+=level.xp+num
-
-                i=0
-                for(;;i++) {
-                    if(400+(120*i*2.5)>xpAll) break;
-                    else xpAll-=400+(120*i*2.5);
-                }
-
-                console.log(`${i-1}, ${xpAll}`)
-
-                level.level = i-1
-                level.xp = xpAll
-
-                level.save().catch(err => console.log(err))
-
-                message.channel.send(new discord.MessageEmbed().setColor('00ff00').setTitle(`Транзакция в ${num}XP была успешно завершена!`).setDescription(`Получатель: ${message.guild.members.cache.get(inUser)}`).setFooter(con.footer))
-            }
+            })
         })
     }catch(err){console.log(err)}},
     cmd: "give",
