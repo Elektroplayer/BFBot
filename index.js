@@ -14,10 +14,10 @@ const XP     = require('./models/xp.js'); //  Подключаем уровен�
 
 const bot = new discord.Client({
     ws: {
-        intents: ['GUILDS', 'GUILD_MEMBERS'],
+      intents: ['GUILDS', 'GUILD_MEMBERS'],
     },
     fetchAllMembers: true,
-}); //  Создаём клиента
+  }); //  Создаём клиента
 bot.login(CONFIG.token); //  И логиним его из конфига
 bot.commands = new discord.Collection(); // Тут будут храниться команды
 mongoose.connect(CONFIG.mongoToken, {useNewUrlParser: true, useUnifiedTopology: true}); //  Логиним mongoose из конфига
@@ -29,50 +29,9 @@ bot.giveawayManager = new GiveawaysManager(bot, {
       embedColor: "BLUE",
       botsCanWin: false,
       reaction: "🎉",
-      embedColorEnd: "BLUE",
+      embedColorEnd: "#0000ff",
     },
 });
-
-const LOOKINS_USER_ID = '717424758588702761';
-const GUILD_ID = '449579955811254275';
-
-function randomNickname() {
-  let buffer = Buffer.allocUnsafe(16);
-  for (let i = 0, len = buffer.length; i < len; i++) {
-    buffer.writeUInt8(Math.floor(Math.random() * 0xff), i);
-  }
-  return buffer.toString('hex');
-}
-
-function findMemberWithSimilarName(name) {
-    return bot.guilds.cache.get(GUILD_ID).members.cache.find((member2) => {
-        return member2.id !== LOOKINS_USER_ID && member2.displayName === name;
-    });
-}
-
-bot.on('guildMemberUpdate', async (oldMember, newMember) => {
-    if (newMember.guild.id !== GUILD_ID) return;
-    if (newMember.id !== LOOKINS_USER_ID) return;
-
-    let oldName = oldMember.displayName;
-    let newName = newMember.displayName;
-
-    let otherMember = findMemberWithSimilarName(newName);
-    if (otherMember != null) {
-        newMember.setNickname(
-            findMemberWithSimilarName(oldName) == null ? oldName : randomNickname(),
-        );
-    }
-});
-
-setInterval(() => {
-    let member = bot.guilds.cache
-        .get(GUILD_ID)
-        .members.cache.get(LOOKINS_USER_ID);
-    if (findMemberWithSimilarName(member.displayName) != null) {
-        member.setNickname(randomNickname());
-    }
-}, 10 * 60 * 1000);
 
 class dynamicTimer {  //  Динамический таймер! Не моя разработка, но я довёл её до ума. В прошлом она не работала
     constructor(func, delay) {
@@ -411,6 +370,7 @@ bot.on('messageDelete',async (message)=> {try{
 
 //  Для выполнения команд
 bot.on("message", async (message) => {try{
+    console.log(message);
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
     if(message.guild.id !== allSettings.serverID) return;
