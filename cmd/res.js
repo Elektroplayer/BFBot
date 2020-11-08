@@ -1,9 +1,5 @@
 module.exports = {
     run: async (bot,message,args,con)=> {try{
-        if(args[0] == "help") {
-            return message.channel.send(con.defEmb.setTitle("Тебе серьёзно нужна помощь по этой команде?").setDescription("Мне лень)").setFooter(con.footer))
-        }
-
         let up = bot.uptime
         let ms = up%1000
         let s = ((up-ms)/1000)%60

@@ -5,7 +5,7 @@ module.exports = {
     run: (bot,message,args,con)=> {try{
 
 
-        if(!args[0]) return addlib.errors.notArgs(message)
+        if(!args[0] || !args[1]) return addlib.errors.notArgs(message)
         
         let option       = args[0];
         let time         = args[1];
@@ -27,7 +27,6 @@ module.exports = {
     
         switch (option) {
             case "start":
-                if(!args[1]) return addlib.errors.notArgs(message)
                 if(!ms(time)) return addlib.errors.falseArgs(message)
                 bot.giveawayManager.start(message.channel, {
                     time: ms(time),
@@ -37,7 +36,6 @@ module.exports = {
             break;
     
             case "end":
-                if(!args[1]) return addlib.errors.notArgs(message)
                 var messageId = args[1];
                 bot.giveawayManager
                 .delete(messageId)
@@ -48,7 +46,7 @@ module.exports = {
 
             case "help":
                 return message.channel.send(con.defEmb.setTitle("Помощь по команде giveaway").setDescription("Сделать розыгрыш").setFooter(con.footer)
-                .addField('Аргументы:',`**start <время> <количество победителей \\|\\| 1> <подарок \\|\\| "приз">** - Создаёт розыгрыш с выбранными параметрами\n**end** - Удаляет идущий розыгрыш`)
+                .addField('Аргументы:',`**start <время> <количество победителей || 1> <подарок || "приз">** - Создаёт розыгрыш с выбранными параметрами\n**end** - Удаляет идущий розыгрыш`)
                 .addField('Примеры:',`**e!giveaway start 1d 3 Discord Nitro** - Создаёт розыгрыш, продлящееся 1 день, с тремя победителями и призом будет "Discord Nitro" *(Можно писать больше 1 слова)*\n**e!giveaway start 1d** - Создаёт розыгрыш, продлящееся 1 день, с одним победителем и призом будет "Приз"\n**e!giveaway end 123123123123** - Закончит голосование с таким ID *(ВВОДИТЬ ТОЛЬКО ID)*`)
                 .addField('Могут использовать:','Все без исключений',true)
                 .addField('Последнее обновление:',`Версия 3.3.1`,true)

@@ -62,8 +62,7 @@ class dynamicTimer {  //  Динамический таймер! Не моя р�
 let allSettings = {
     "logChannel": "449903789932150785",
     "autorole": "737674609767350322",
-    "wellcomeChannel": "449903789932150785",
-    "serverID": "449579955811254275"
+    "wellcomeChannel": "449903789932150785"
 }
 
 /*
@@ -209,7 +208,7 @@ bot.on('raw', async (event) => { try {
 bot.on('message', async (message)=>{try{
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
-    if(message.guild.id !== allSettings.serverID) return;
+    if(message.guild.id !== "449579955811254275") return;
 
     //console.log(message.member.roles.cache.get('763328341574025267'));
 
@@ -284,7 +283,6 @@ bot.on('message', async (message)=>{try{
 bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
     if(oldMessage.author.bot) return; //  Не слушаем других ботов
     if(oldMessage.channel.type == 'dm') return; //  Не слушаем ЛС
-    if(oldMessage.guild.id !== allSettings.serverID) return;
 
     let ok=true; //  Проверка на исключение
     for(let i=0;i<=xpExceptions.length-1;i++) { if(oldMessage.channel.id === xpExceptions[i]) { ok=false; break;}}
@@ -335,7 +333,6 @@ bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
 bot.on('messageDelete',async (message)=> {try{
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
-    if(message.guild.id !== allSettings.serverID) return;
 
     let ok=true //  Проверка на исключение
     for(let i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
@@ -373,7 +370,6 @@ bot.on("message", async (message) => {try{
     console.log(message);
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
-    if(message.guild.id !== allSettings.serverID) return;
 
     //let messageArray  = message.content.replace(/\s/g, ' ').split(" ");
     let messageArray  = message.content.replace(/\s+/g, ' ').split(" ");
@@ -399,7 +395,6 @@ bot.on("message", async (message) => {try{
 bot.on("message", async (message) => {try{
     //if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
-    if(message.guild.id !== allSettings.serverID) return;
 
     if(message.content.replace(/\s/g, '').includes("discord.gg/")) {
         if(!logSettings.enabled) return; //  Не обращаем внимания, если проверка выключена
@@ -430,7 +425,6 @@ bot.on("message", async (message) => {try{
 bot.on("messageUpdate", async (oldMessage, message) => {try{
     //if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
-    if(message.guild.id !== allSettings.serverID) return;
 
     if(message.content.replace(/\s/g, '').includes("discord.gg/")) {
         if(!logSettings.enabled) return; //  Не обращаем внимания, если проверка выключена
@@ -460,8 +454,6 @@ bot.on("messageUpdate", async (oldMessage, message) => {try{
 
 // Когда пришёл новый человек
 bot.on("guildMemberAdd", member =>  {
-    if(member.guild.id !== allSettings.serverID) return;
-
     let channel = member.guild.channels.cache.get(allSettings.wellcomeChannel);
 
     if (!channel) return member.guild.channels.cache.get(allSettings.logChannel).send(new discord.MessageEmbed().setColor('ff0000').setTitle(`Канал "${allSettings.wellcomeChannel}" не найден`));
@@ -498,7 +490,6 @@ bot.on("guildMemberAdd", member =>  {
 
 // А это когда человек ушёл(
 bot.on('guildMemberRemove', member => {
-    if(member.guild.id !== allSettings.serverID) return;
 
     let channel = member.guild.channels.cache.get(allSettings.wellcomeChannel);
 
