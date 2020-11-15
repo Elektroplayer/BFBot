@@ -20,7 +20,8 @@ module.exports = {
         if(!ok) return addlib.errors.notPerms(message);
 
         message.channel.bulkDelete(args[0],true).then(() => {
-            message.channel.send(con.defEmb.setColor('#00ff00').setTitle(`Очищено ${args[0]} сообщений.`)).then(msg => msg.delete({timeout:5000}));
+            addlib.errors.success(`Очищено ${args[0]} сообщений.`);
+            //message.channel.send(con.defEmb.setColor('#00ff00').setTitle(`Очищено ${args[0]} сообщений.`)).then(msg => msg.delete({timeout:5000}));
         });
     }catch(err){console.log(err)}},
     cmd: ["clear","clean"],

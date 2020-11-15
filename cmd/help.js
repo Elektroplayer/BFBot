@@ -12,6 +12,7 @@ module.exports = {
             for(let i2=0;i2<=con.cmds.length-1;i2++) {
                 if(con.cmds[i2].category == categories[i1]) text = text+`**${con.prefix}${con.cmds[i2].cmd}** - ${con.cmds[i2].desc}\n`
             }
+            if(text == '') continue;
             emb.addField(categories[i1],text);
         }
         message.channel.send(emb.setFooter(con.footer));

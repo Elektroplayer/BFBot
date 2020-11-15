@@ -57,7 +57,8 @@ class dynamicTimer {  //  Динамический таймер! Не моя р�
 let allSettings = {
     "logChannel": "449903789932150785",
     "autorole": "737674609767350322",
-    "wellcomeChannel": "449903789932150785"
+    "wellcomeChannel": "449903789932150785",
+    "serverID": "449579955811254275"
 }
 
 /*
@@ -203,7 +204,7 @@ bot.on('raw', async (event) => { try {
 bot.on('message', async (message)=>{try{
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
-    if(message.guild.id !== "449579955811254275") return;
+    if(message.guild.id !== allSettings.serverID) return;
 
     //console.log(message.member.roles.cache.get('763328341574025267'));
 
@@ -250,7 +251,7 @@ bot.on('message', async (message)=>{try{
 
 			if(nxtLvl <= level.xp){
 
-				let otnxp        = level.xp - nxtLvl;
+				let otnxp    = level.xp - nxtLvl;
 				level.level  = curlvl + 1;
                 level.xp     = otnxp;
                 
@@ -276,6 +277,7 @@ bot.on('message', async (message)=>{try{
 
 //  Если человек изменил сообщение, то уровень пересчитывается и следовательно отнимается или даётся
 bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
+    if(oldMessage.guild.id !== allSettings.serverID) return;
     if(oldMessage.author.bot) return; //  Не слушаем других ботов
     if(oldMessage.channel.type == 'dm') return; //  Не слушаем ЛС
 
@@ -326,6 +328,7 @@ bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
 
 //  Если человек удалил сообщение, то уровень удаляется. ДА, с помощью такой фичи можно получить отрицательный XP, но мне пофиг)
 bot.on('messageDelete',async (message)=> {try{
+    if(message.guild.id !== allSettings.serverID) return;
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
 
@@ -363,6 +366,7 @@ bot.on('messageDelete',async (message)=> {try{
 
 //  Для выполнения команд
 bot.on("message", async (message) => {try{
+    if(message.guild.id !== allSettings.serverID) return;
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
 
@@ -388,6 +392,7 @@ bot.on("message", async (message) => {try{
 
 //  Удаление ссылок приглашений
 bot.on("message", async (message) => {try{
+    if(message.guild.id !== allSettings.serverID) return;
     //if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
 
@@ -418,6 +423,7 @@ bot.on("message", async (message) => {try{
 
 //  Удаление ссылок приглашений после обновления сообщения
 bot.on("messageUpdate", async (oldMessage, message) => {try{
+    if(message.guild.id !== allSettings.serverID) return;
     //if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
 
@@ -449,6 +455,7 @@ bot.on("messageUpdate", async (oldMessage, message) => {try{
 
 // Когда пришёл новый человек
 bot.on("guildMemberAdd", member =>  {
+    if(member.guild.id !== allSettings.serverID) return;
     let channel = member.guild.channels.cache.get(allSettings.wellcomeChannel);
 
     if (!channel) return member.guild.channels.cache.get(allSettings.logChannel).send(new discord.MessageEmbed().setColor('ff0000').setTitle(`Канал "${allSettings.wellcomeChannel}" не найден`));
@@ -485,7 +492,7 @@ bot.on("guildMemberAdd", member =>  {
 
 // А это когда человек ушёл(
 bot.on('guildMemberRemove', member => {
-
+    if(member.guild.id !== allSettings.serverID) return;
     let channel = member.guild.channels.cache.get(allSettings.wellcomeChannel);
 
     if (!channel) return member.guild.channels.cache.get(allSettings.logChannel).send(new discord.MessageEmbed().setColor('ff0000').setTitle(`Канал "${allSettings.wellcomeChannel}" не найден`));
