@@ -139,7 +139,7 @@ bot.on("voiceStateUpdate", (oldInfo, newInfo) => {
         let name    = `《🔊》${member.user.username}`;
         
         if(server.channels.cache.find(n=>n.name === name)) {
-            return member.voice.setChannel(server.channels.find(n=>n.name === name).id)
+            return member.voice.setChannel(server.channels.cache.find(n=>n.name === name).id)
         }
 
         server.channels.create(`${name}`, {
