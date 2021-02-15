@@ -52,7 +52,7 @@ module.exports = {
                     await msg.react('⏩');
 
                     let count;
-                    if(res.length%9!=0) count = (res.length - res.length%9)/9+1;
+                    if(res.length%9!=0) count = (res.length - res.length%9)/9;
                     else count = res.length/9;
     
                     let countNow  = 0;

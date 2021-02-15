@@ -61,18 +61,6 @@ let allSettings = {
     "serverID": "449579955811254275"
 }
 
-/*
-let statuses = { //  Задаём все статусы // Не используется!
-    "list": [
-        {
-            "name": "аниме | e!? - Помощь",
-            "type": "WATCHING"
-        }
-    ],
-    "timeout": 15000
-}
-*/
-
 let logSettings = {
     enabled: true,
     logs: {
@@ -98,17 +86,6 @@ bot.on('ready', () => {
     console.log('Ready!'); //  Говорим о готовности
     
     bot.user.setActivity("аниме | e!? - Помощь", {type: "WATCHING"}); // Выставляем активность
-
-    /*
-    //  У меня всего лишь 1 статус, но если их будет будет больше, этот код мне поможет
-    let i=0; //  И изменяем активность по заданным статусам
-	setInterval(()=>{
-		if(i> statuses.list.length-1) i=0;
-		if(typeof statuses.list[i]["name"]=='object') bot.user.setActivity(statuses.list[i]["name"][Math.floor(Math.random() * statuses.list[i]["name"].length)], {type: statuses.list[i].type});
-		else bot.user.setActivity(statuses.list[i]["name"], {type: statuses.list[i].type});
-		i++;
-    },statuses.timeout);
-    */
 });
 
 //  Загрузка команд из директории /cmd
@@ -136,34 +113,7 @@ fs.readdir("./cmd/", (err, files) => {
 
 // Просмотр ВСЕХ евентов (да читы, а хотя нет, раз это есть в официальной библеотеке, то это тоже самое, что не пользоваться имбалансным спелом))) )
 bot.on('raw', async (event) => { try {
-    
-    //  Оставлено до лучших времён.....
-    /*if ((event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") && event.d.emoji.name == '🆙') { // Выдача xp за реакцию
-        let message = await bot.guilds.cache.get(event.d.guild_id).channels.cache.get(event.d.channel_id).messages.fetch(event.d.message_id)
-
-        if(!message.reactions.cache.get('🆙') && !message.reactions.cache.get('🆙').users.cache.get(bot.user.id)) return;
-
-        let xpAdd = 50;
-        if (event.t === "MESSAGE_REACTION_REMOVE") xpAdd=-xpAdd;
-
-        XP.findOne({userID:event.d.user_id}, (err, level) => {
-            if(err) console.log(err);
-
-            if(!level) {
-                var newXP =  new XP({
-                    userID: message.author.id,
-                    level: 0,
-                    xp: xpAdd
-                })
-    
-                newXP.save().catch(err => console.log(err))
-            } else {
-                level.xp   = level.xp + xpAdd
-                level.save().catch(err => console.log(err))
-            }
-        })
-        
-	} else */ if (event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") { // Роли по реакции
+    if (event.t === 'MESSAGE_REACTION_ADD' || event.t == "MESSAGE_REACTION_REMOVE") { // Роли по реакции
 		if(event.d.message_id == '738369557961506886' && event.d.user_id != bot.user.id) {
 			let guild      = bot.guilds.cache.get(event.d.guild_id);
 			let member     = guild.members.cache.get(event.d.user_id);
@@ -177,36 +127,45 @@ bot.on('raw', async (event) => { try {
 				}
 			}
 		}
-	} else if(event.t === 'VOICE_STATE_UPDATE' && event.d.channel_id === '740524137981804664') { // Создание приваток
-		let server = bot.guilds.cache.get(event.d.guild_id);
-		let member = server.members.cache.get(event.d.user_id);
-		let name   = `《🔊》${member.user.username}`;
-		
-		if(server.channels.cache.find(n=>n.name === name)) {
-			return member.voice.setChannel(server.channels.find(n=>n.name === name).id)
-		}
-
-		server.channels.create(`${name}`, {type: 'voice', parent: '449804617421946880'}).then(channel => {
-			member.voice.setChannel(channel);
-			var intr = setInterval(()=>{
-				if(channel.deleted) return clearInterval(intr)
-				if(channel.members.size <= 0) {
-					channel.delete();
-					clearInterval(intr)
-				}
-			}, 5000)
-		})
-	} else return;
+	}
 }catch(err){console.log(err)}})
 
+bot.on("voiceStateUpdate", (oldInfo, newInfo) => {
+    let status = newInfo.channel ? "enter" : "leave";
+
+    if(status == "enter" && newInfo.channel.parentID == "449804617421946880" && newInfo.channel.id == "740524137981804664") {
+        let server  = bot.guilds.cache.get(newInfo.guild.id);
+        let member  = newInfo.member;
+        let name    = `《🔊》${member.user.username}`;
+        
+        if(server.channels.cache.find(n=>n.name === name)) {
+            return member.voice.setChannel(server.channels.find(n=>n.name === name).id)
+        }
+
+        server.channels.create(`${name}`, {
+            type: 'voice',
+            parent: '449804617421946880',
+            permissionOverwrites: [{
+                id: member.id,
+                allow: ['MANAGE_CHANNELS']
+            }]
+        }).then(channel => {
+            member.voice.setChannel(channel);
+        })
+    } else if( !!oldInfo.channel && oldInfo.channel.parentID == "449804617421946880" && oldInfo.channel.id != "740524137981804664") {
+        let channel = oldInfo.channel
+        if(channel.deleted) return;
+        setTimeout(()=> {
+            if(channel.members.size <= 0) channel.delete();
+        },3000)
+    }
+})
 
 //  Уровневая система
 bot.on('message', async (message)=>{try{
     if(message.author.bot) return; //  Не слушаем других ботов
     if(message.channel.type == 'dm') return; //  Не слушаем ЛС
     if(message.guild.id !== allSettings.serverID) return;
-
-    //console.log(message.member.roles.cache.get('763328341574025267'));
 
     let ok=true //  Проверка на исключение
     for(let i=0;i<=xpExceptions.length-1;i++) { if(message.channel.id === xpExceptions[i]) { ok=false; break;}}
@@ -230,10 +189,6 @@ bot.on('message', async (message)=>{try{
 
         let xpAdd = Math.floor(messLeng/2)+1;
 
-        //if(message.member.roles.has("763328341574025267")) xpAdd+=xpAdd; //  Увеличение XP бустерам
-
-		//console.log(`${message.author.username}: ${xpAdd}xp`); // Не знаю зачем, раньше была для откладки
-
 		if(!level) {
 			var newXP =  new XP({
 				userID: message.author.id,
@@ -247,7 +202,6 @@ bot.on('message', async (message)=>{try{
 
 			let curlvl = level.level;
             let nxtLvl = 400+(120*curlvl*2.5);
-            //let nxtLvl = Math.ceil(Math.sqrt(10000 + Math.pow(level.level, 2) * 300 * Math.pow(1.2, level.level)));
 
 			if(nxtLvl <= level.xp){
 
@@ -256,18 +210,6 @@ bot.on('message', async (message)=>{try{
                 level.xp     = otnxp;
                 
                 message.react('🆙')
-                // Оставлено до лучших времён......
-                /* .then(message=>{
-                    //  Попытка сделать через коллектор и не городить велосипед была... Как уже понятно, она провалилась
-                    
-                    setTimeout(()=>{
-                        if(message.deleted || !message.reactions) return;
-                        message.reactions.cache.get("🆙").remove();
-                    }, 10000);
-                }); */
-		
-				//embed = new discord.MessageEmbed().setTitle("Новый уровень!").setColor("#0000FF").addField(`АТЛИЧНА, ${message.author.username}!!! Ты достиг **${curlvl+1} уровня**!`, "Продолжай в том же духе!").setImage("attachment://lvlup.png")
-				//message.channel.send({embed: embed, files: [new discord.MessageAttachment("./img/lvlup.png", 'lvlup.png')]}).then(msg => {msg.delete({timeout:10000})});
 			}
 
 			level.save().catch(err => console.log(err))
@@ -291,14 +233,11 @@ bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
     if(newMessLeng>800) newMessLeng = 800;
 
     let xpAdd = (Math.floor(newMessLeng/2)+1) - (Math.floor(oldMessLeng/2)+1);
-    //if(message.member.roles.has("763328341574025267")) xpAdd+=xpAdd; //  Увеличение XP бустерам
 
     XP.findOne({userID: oldMessage.author.id}, (err, level) => {
 		if(err) console.log(err);
 
-		//console.log(`${message.author.username}: ${xpAdd}xp`); // Не знаю зачем, раньше была для откладки
-
-		if(!level) {
+        if(!level) {
 			var newXP =  new XP({
 				userID: oldMessage.author.id,
 				level: 0,
@@ -318,7 +257,6 @@ bot.on('messageUpdate',async (oldMessage,newMessage)=>{try{
 				level.level  = curlvl + 1;
                 level.xp     = otnxp;
                 
-                //message.react('🆙'); // Наверное, лучше это тут убрать
 			}
 
 			level.save().catch(err => console.log(err))
@@ -343,9 +281,6 @@ bot.on('messageDelete',async (message)=> {try{
         if(messLeng>800) messLeng = 800
 
         let xpAdd = Math.floor(messLeng/2)+1;
-        //if(message.member.roles.has("763328341574025267")) xpAdd+=xpAdd; //  Увеличение XP бустерам
-
-		//console.log(`${message.author.username}: ${xpAdd}xp`); // Не знаю зачем, раньше была для откладки
 
 		if(!level) {
 			var newXP =  new XP({
